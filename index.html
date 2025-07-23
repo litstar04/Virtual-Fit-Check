@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Fit Check - Login</title>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+<div class="container" id="loginPage">
+    <h1>Login to Virtual Fit Check Advisor</h1>
+    <p class="description">Please login with your email and password.</p>
+
+    <!-- Login Form -->
+    <label for="loginEmail">Email:</label>
+    <input type="email" id="loginEmail" placeholder="Enter your email">
+
+    <label for="loginPassword">Password:</label>
+    <input type="password" id="loginPassword" placeholder="Enter your password">
+
+    <div class="options">
+        <button onclick="login()">Login</button>
+        <button onclick="showSignupPage()">Sign Up</button>
+    </div>
+</div>
+
+<div class="container" id="signupPage" style="display:none;">
+    <h1>Sign Up for Virtual Fit Check Advisor</h1>
+    <p class="description">Create an account by providing your details below.</p>
+
+    <!-- Signup Form -->
+    <label for="signupEmail">Email:</label>
+    <input type="email" id="signupEmail" placeholder="Enter your email">
+
+    <label for="signupPassword">Password:</label>
+    <input type="password" id="signupPassword" placeholder="Enter your password">
+
+    <!-- Gender Selection -->
+    <label for="gender">Select Your Gender:</label>
+    <select id="gender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+    </select>
+
+     <!-- Sign Up Button -->
+     <button onclick="signup()">Sign Up</button>
+
+</div>
+
+<!-- Link to external JavaScript file -->
+<script src="script.js"></script>
+
+</body>
+</html>

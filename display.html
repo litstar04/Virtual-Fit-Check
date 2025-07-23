@@ -1,0 +1,31 @@
+# Generate HTML content
+html_content = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <style>
+        img {
+            max-width: 200px;
+            margin: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Gallery</h1>
+    
+for image_path in matched_images:
+    relative_path = os.path.relpath(image_path, start=os.getcwd())  # Relative path for web server
+    html_content += f'<img src="{relative_path}" alt="{os.path.basename(image_path)}">\n'
+
+html_content += """
+</body>
+</html>
+"""
+with open("image_gallery.html", "w") as html_file:
+    html_file.write(html_content)
+
+print("HTML file generated: image_gallery.html")

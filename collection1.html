@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Fit Check</title>
+    
+    <!-- Google Fonts for better typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        /* Tabs Styling */
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab {
+            padding: 14px 20px;
+            flex-grow: 1;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            color: #555;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .tab:hover {
+            background-color: #f1f1f1;
+        }
+
+        .active-tab {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* Panels Styling */
+        .panel {
+            display: none;
+            padding-top: 20px;
+        }
+
+        .active-panel {
+            display: block;
+        }
+
+        /* Items Grid Layout */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .item-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .item-card img {
+            width: 100%;
+            height: auto;
+        }
+
+        .item-info {
+            padding: 15px;
+        }
+
+        .item-info p {
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .item-info span {
+            font-size: 14px;
+            color: #777;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+          h2 {
+              text-align: center; 
+          }
+          .tabs {
+              flex-direction: column; 
+          }
+          .tab { 
+              padding-top:10px; 
+              padding-bottom :10 px; 
+          }
+      }
+      
+    </style>
+</head>
+<body>
+
+    <!-- Tabs for navigation -->
+    <div class="tabs">
+        <div class="tab active-tab" onclick="showPanel(0)">ALL</div>
+        <div class="tab" onclick="showPanel(1)">TOPS</div>
+        <div class="tab" onclick="showPanel(2)">PANTS</div>
+        <div class="tab" onclick="showPanel(3)">DRESSES</div>
+    </div>
+
+    <!-- Panels for displaying the items -->
+    <div class="panel active-panel" id="all">
+      <h2>All Items</h2>
+      <div class="items-grid">
+          <!-- Items will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <div class="panel" id="tops">
+      <h2>Tops</h2>
+      <div class="items-grid">
+          <!-- Items will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <div class="panel" id="pants">
+      <h2>Pants</h2>
+      <div class="items-grid">
+          <!-- Items will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <div class="panel" id="dresses">
+      <h2>Dresses</h2>
+      <div class="items-grid">
+          <!-- Items will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <!-- JavaScript to handle tab switching and item rendering -->
+    <script>
+      // Sample fashion data (you can replace this with data from a CSV file)
+      const fashionData = [
+          { name: 'T-shirt', category: 'top', sub_category: 'tshirt', price: '₹999', image_url:'https://via.placeholder.com/200x200?text=T-shirt' },
+          { name:'Button-up Shirt', category:'top', sub_category:'shirt', price:'₹1,499', image_url:'https://via.placeholder.com/200x200?text=Shirt' },
+          { name:'Jeans', category:'pants', sub_category:'jeans', price:'₹1,999', image_url:'https://via.placeholder.com/200x200?text=Jeans' },
+          { name:'Skirt', category:'pants', sub_category:'skirt', price:'₹799', image_url:'https://via.placeholder.com/200x200?text=Skirt' },
+          { name:'Dress', category:'dress', sub_category:'dress', price:'₹2,499', image_url:'https://via.placeholder.com/200x200?text=Dress' },
+          { name:'Summer T-shirt', category:'top', sub_category:'tshirt', price:'₹699', image_url:'https://via.placeholder.com/200x200?text=Summer+T-shirt' },
+          { name:'Trousers', category:'pants', sub_category:'trousers', price:'₹1,299', image_url:'https://via.placeholder.com/200x200?text=Trousers' },
+          { name:'Shorts', category:'pants', sub_category:'shorts', price:'₹499', image_url:'https://via.placeholder.com/200x200?text=Shorts' },
+          { name:'Evening Gown', category:'dress', sub_category:'gown', price:'₹3,999', image_url:'https://via.placeholder.com/200x200?text=Evening+Gown' },
+          { name:"Casual Dress", category:"dress", sub_category:"casual dress", price:"₹1,999", image_url:"https://via.placeholder.com/200x200?text=Casual+Dress"}
+      ];
+
+      // Function to render items in a specific panel
+      function renderItems(category) {
+          const container = document.querySelector(`#${category} .items-grid`);
+          
+          // Clear existing content
+          container.innerHTML = '';
+          
+          // Filter the items based on the category
+          const itemsToDisplay = fashionData.filter(item => category === "all" || item.category === category);
+          
+          // Create HTML for each item and append to the container
+          itemsToDisplay.forEach(item => {
+              const itemHtml = `
+                  <div class="item-card">
+                      <img src="${item.image_url}" alt="${item.name}">
+                      <div class="item-info">
+                          <p>${item.name}</p>
+                          <span>${item.price}</span>
+                      </div>
+                  </div>`;
+              container.innerHTML += itemHtml;
+          });
+      }
+
+      // Function to switch between panels
+      function showPanel(panelIndex) {
+          const panels = document.querySelectorAll('.panel');
+          const tabs = document.querySelectorAll('.tab');
+          
+          // Hide all panels and remove active tab styles
+          panels.forEach(panel => panel.classList.remove('active-panel'));
+          tabs.forEach(tab => tab.classList.remove('active-tab'));
+          
+          // Show the selected panel and activate the corresponding tab
+          panels[panelIndex].classList.add('active-panel');
+          tabs[panelIndex].classList.add('active-tab');
+      }
+
+      // Initialize the page with all items displayed in the "All" tab
+      document.addEventListener("DOMContentLoaded", function() {
+         renderItems("all");
+         renderItems("tops");
+         renderItems("pants");
+         renderItems("dresses");
+      });
+      
+    </script>
+
+</body>
+</html>

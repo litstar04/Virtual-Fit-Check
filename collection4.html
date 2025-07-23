@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Fit Check</title>
+    
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="homepage.css">
+
+    <!-- Load TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <!-- Load Posenet -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet"></script>
+</head>
+<body>
+
+<div class="container">
+    <!-- Welcome Section -->
+    <h1>Welcome Back!</h1>
+    <p class="description">We are excited to help you find the best fashion that suits your style.</p>
+
+    <!-- Options: Manual or Automatic Measurements -->
+    <div class="options">
+        <button onclick="showManualEntry()">Enter Measurements Manually</button>
+        <button onclick="getMeasuredNow()">Get Measured Automatically</button>
+    </div>
+
+    <!-- Manual Measurements Entry Section (Initially Hidden) -->
+    <div id="manualMeasurements" style="display:none;">
+        <h2>Enter Your Measurements Manually</h2>
+
+        <!-- Gender Selection -->
+        <label for="gender">Select Your Gender:</label>
+        <select id="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+
+        <!-- Complexion Selection -->
+        <label for="complexion">Select Your Complexion:</label>
+        <select id="complexion">
+            <option value="fair">Fair</option>
+            <option value="medium">Medium</option>
+            <option value="dark">Dark</option>
+        </select>
+
+        <!-- Height Input -->
+        <label for="height">Height (cm):</label>
+        <input type="number" id="height" placeholder="Enter your height">
+
+        <!-- Waist Input -->
+        <label for="waist">Waist (cm):</label>
+        <input type="number" id="waist" placeholder="Enter your waist size">
+
+        <!-- Chest Input -->
+        <label for="chest">Chest (cm):</label>
+        <input type="number" id="chest" placeholder="Enter your chest size">
+
+        <!-- Submit Button -->
+        <button onclick="submitMeasurements()">Submit Measurements</button>
+    </div>
+
+    <!-- Automatic Measurement Section (PoseNet) Initially Hidden-->
+    <div id="automaticMeasurements" style="display:none;">
+        <!-- Video Element for PoseNet -->
+        <h2>Automatic Measurement Using PoseNet</h2>
+        <video id="video" width="640" height="480" autoplay></video>
+
+        <!-- Button to Capture Pose -->
+        <button onclick="estimatePose()">Estimate Pose</button>
+
+        <!-- Display Estimated Measurements or Keypoints -->
+        <pre id='poseOutput'></pre>  <!-- Use preformatted text for better display of keypoints -->
+    </div>
+
+</div>
+
+<script>
+// Function to display the manual measurements entry section
+function showManualEntry() {
+    document.getElementById('manualMeasurements').style.display = 'block';
+}
+
+// Function to handle the submission of measurements
+function submitMeasurements() {
+  const gender = document.getElementById('gender').value;
+  const complexion = document.getElementById('complexion').value;
+  const height = document.getElementById('height').value;
+  const waist = document.getElementById('waist').value;
+  const chest = document.getElementById('chest').value;
+
+  if (height && waist && chest) {
+      alert(`Measurements submitted:\nGender: ${gender}\nComplexion: ${complexion}\nHeight: ${height} cm\nWaist: ${waist} cm\nChest: ${chest} cm`);
+  } else {
+      alert("Please fill out all measurements.");
+  }
+}
+
+// Load PoseNet and set up video stream
+async function loadPosenet() {
+  const net = await posenet.load();
+  return net;
+}
+
+async function setupCamera() {
+  const video = document.getElementById('video');
+  
+  // Access user's webcam
+  const stream = await navigator.mediaDevices.getUserMedia({
+      video: true
+  });
+  
+  video.srcObject = stream;
+
+  return new Promise((resolve) => {
+      video.onloadedmetadata = () => {
+          resolve(video);
+      };
+  });
+}
+
+// Function to estimate pose using PoseNet
+async function estimatePose() {
+  try {
+      // Load PoseNet model
+      const net = await loadPosenet();
+      
+      // Set up camera feed
+      const video = await setupCamera();
+      
+      // Estimate pose from the video feed
+      const pose = await net.estimateSinglePose(video, {
+          flipHorizontal: false
+      });
+
+      console.log(pose);
+      
+      // Display keypoints in the output paragraph
+      document.getElementById('poseOutput').innerText = JSON.stringify(pose.keypoints, null, 2);
+      
+  } catch (error) {
+      console.error("Error estimating pose:", error);
+      alert("Failed to estimate pose. Please try again.");
+  }
+}
+
+// Show automatic measurement section when button is clicked
+function getMeasuredNow() {
+    document.getElementById('automaticMeasurements').style.display = 'block';
+}
+</script>
+
+</body>
+</html>

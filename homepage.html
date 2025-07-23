@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Body Measurements</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    button {
+      margin: 10px;
+      padding: 15px;
+      background-color: #f04e4e;
+      color: white;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #d43c3c;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    input[type="number"], select {
+      width: calc(100% - 20px);
+      padding: 10px;
+    }
+    label {
+      font-weight: bold;
+    }
+    .hidden {
+      display: none;
+    }
+    .visible {
+      display: block;
+    }
+    #capturedImage {
+      margin-top: 15px;
+      max-width: 100%;
+    }
+    video {
+      width: 100%;
+      border: 1px solid #ddd;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+   <h1>Welcome Back!</h1>
+   <p>We are excited to help you find the best fashion that suits your style.</p>
+
+   <!-- Buttons for Manual and Automatic Measurement -->
+   <button onclick="showManualForm()">Enter Measurements Manually</button>
+   <button onclick="captureAutomatically()">Get Measured Automatically</button>
+
+   <!-- Manual Measurement Form -->
+   <div id="manualForm" class="hidden">
+       <h3>Enter Your Measurements Manually</h3>
+       <div class="form-group">
+           <label for="gender">Select Your Gender:</label>
+           <select id="gender">
+               <option value="Male">Male</option>
+               <option value="Female">Female</option>
+           </select>
+       </div>
+       <div class="form-group">
+           <label for="complexion">Select Your Complexion:</label>
+           <select id="complexion">
+               <option value="Fair">Fair</option>
+               <option value="Medium">Medium</option>
+               <option value="Dark">Dark</option>
+           </select>
+       </div>
+       <div class="form-group">
+           <label for="height">Height (cm):</label>
+           <input type="number" id="height" placeholder="Enter your height" required>
+       </div>
+       <button onclick="submitManualMeasurements()">Save Data Manually</button>
+   </div>
+
+   <!-- Automatic Measurement Section -->
+   <div id="cameraSection" class="hidden">
+       <h3>Capture Image from Camera</h3>
+
+       <!-- Webcam feed will be displayed here -->
+       <video id="webcamFeed" autoplay></video><br><br>
+
+       <!-- Button to capture image -->
+       <button onclick="captureImage()">Capture Image</button><br><br>
+
+       <!-- Display captured image -->
+       <img id="capturedImage" src="" alt="" style="display:none; width:300px;">
+   </div>
+
+</div>
+
+<script>
+// Show manual form when button is clicked
+function showManualForm() {
+   document.getElementById('manualForm').classList.remove('hidden');
+   document.getElementById('cameraSection').classList.add('hidden');
+}
+
+// Show camera section when button is clicked
+function captureAutomatically() {
+   document.getElementById('cameraSection').classList.remove('hidden');
+   document.getElementById('manualForm').classList.add('hidden');
+
+   // Initialize webcam feed
+   const video = document.getElementById('webcamFeed');
+   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+     navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+         video.srcObject = stream;
+     });
+   }
+}
+
+// Capture image from webcam and send it as base64 string to backend API for automatic measurement
+function captureImage() {
+   const video = document.getElementById('webcamFeed');
+   const canvas = document.createElement('canvas');
+   canvas.width = video.videoWidth;
+   canvas.height = video.videoHeight;
+
+   // Draw the current frame from the video onto the canvas
+   canvas.getContext('2d').drawImage(video, 0, 0);
+
+   // Convert canvas to data URL (base64)
+   const dataUrl = canvas.toDataURL('image/png');
+   
+   // Display captured image in the UI (optional)
+   const capturedImageElement = document.getElementById('capturedImage');
+   capturedImageElement.src = dataUrl;
+   capturedImageElement.style.display = 'block';
+
+   // Send this base64 string to backend for processing automatic measurement.
+   submitAutomaticMeasurements(dataUrl);
+}
+
+// Submit automatic measurements using base64 image to backend API
+async function submitAutomaticMeasurements(imageData) {
+    try {
+        console.log("Sending request to /measure");
+        const response = await fetch('http://127.0.0.1:5000/measure', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image_data: imageData })
+        });
+
+        console.log("Response status:", response.status);
+
+        const result = await response.json();
+        console.log("Response JSON:", result);
+
+        if (response.ok) {
+            alert("Automatic measurements saved successfully");
+            console.log(result.measurements);
+        } else {
+            alert("Error capturing automatic measurements");
+            console.error(result.error);
+        }
+    } catch (error) {
+        alert("Error capturing automatic measurements");
+        console.error("Error:", error);
+    }
+}
+
+// Submit manual measurements to backend API
+async function submitManualMeasurements() {
+    const height = document.getElementById('height').value;
+    const gender = document.getElementById('gender').value;
+    const complexion = document.getElementById('complexion').value;
+
+    if (!height) {
+        alert("Please enter your height.");
+        return;
+    }
+
+    try {
+        const response = await fetch('http://127.0.0.1:5000/manual_measurements', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ height, gender, complexion })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message);
+            console.log(result.measurements); // Display calculated measurements in console or UI.
+           
+        } else {
+            alert("Error saving manual measurements");
+        }
+        
+    } catch (error) {
+        alert("Error saving manual measurements");
+        console.error("Error:", error);
+    }
+}
+</script>
+
+</body>
+</html>

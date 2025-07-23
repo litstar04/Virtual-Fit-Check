@@ -1,0 +1,118 @@
+/* General Styles */
+body {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b);  /* Warm gradient from coral to peach */
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+.container {
+    max-width: 700px;
+    margin: 50px auto;
+    background-color: #ffffff;  /* White background for contrast */
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Headings */
+h1 {
+    color: #333; /* Dark color for contrast */
+    text-align: center;
+    font-weight: bold;
+    font-size: 32px;
+}
+
+.description {
+    text-align: center;
+    color: #666;
+}
+
+/* Labels */
+label {
+    font-weight: bold;
+}
+
+/* Input and Select Fields */
+select, input {
+    width: calc(100% - 20px);
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd; /* Light border for inputs */
+}
+
+/* Input focus effect */
+input:focus, select:focus {
+   border-color:#ff6f61; 
+   box-shadow:0 0 5px rgba(255,110,97,.5); /* Coral glow effect on focus */
+}
+
+/* Button Styles */
+button {
+   background-color:#ff6f61; 
+   color:white; 
+   padding:12px; 
+   border:none; 
+   border-radius:8px; 
+   font-size:18px; 
+   font-weight:bold; 
+   cursor:pointer; 
+   transition: all .3s ease-in-out; /* Smooth transition for hover effects */
+}
+
+/* Hover Effect for Buttons */
+button:hover {
+    transform: scale(1.05); /* Slightly increase size on hover */
+    background-color:#e55a4f; /* Darker coral on hover */
+}
+
+/* Active (Pressed) Effect for Buttons */
+button:active {
+    transform: scale(0.98); /* Slightly shrink on click */
+}
+
+/* Flexbox for Button Alignment in Options Section */
+.options {
+    display: flex;
+    justify-content: center; /* Center the buttons horizontally */
+    gap: 20px; /* Add space between the buttons */
+}
+
+#manualMeasurements {
+   display:none; 
+   margin-top: 30px;
+   padding-top: 20px;
+   border-top: 2px solid #ff6f61; /* Coral line separating sections */
+}
+
+/* Video Element Styling for Automatic Measurements Section */
+#automaticMeasurements video {
+    display:block;
+    margin-bottom:20px;
+}
+
+/* Preformatted Text Style for Pose Output Display */
+pre {
+    background-color:#f4f4f4; 
+    padding:15px; 
+    border-radius:8px; 
+    font-size:14px;
+}
+
+/* Flexbox Alignment for Form Elements in Manual Measurements Section */
+#manualMeasurements label,
+#manualMeasurements select,
+#manualMeasurements input,
+#manualMeasurements button {
+    width:100%;
+}
+
+#manualMeasurements label {
+   margin-bottom:5px;
+}
+
+#manualMeasurements select,
+#manualMeasurements input {
+   margin-bottom:15px;
+}

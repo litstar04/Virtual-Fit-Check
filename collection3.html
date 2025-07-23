@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Fit Check</title>
+    
+    <!-- Google Fonts for better typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        /* Tabs Styling */
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab {
+            padding: 14px 20px;
+            flex-grow: 1;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            color: #555;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .tab:hover {
+            background-color: #f1f1f1;
+        }
+
+        .active-tab {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* Panels Styling */
+        .panel {
+            display: none;
+            padding-top: 20px;
+        }
+
+        .active-panel {
+            display: block;
+        }
+
+        /* Items Grid Layout */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .item-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .item-card img {
+            width: 100%;
+            height: auto;
+        }
+
+        .item-info {
+            padding: 15px;
+        }
+
+        .item-info p {
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .item-info span {
+            font-size: 14px;
+            color: #777;
+        }
+
+        /* Add to Cart Button */
+        .add-to-cart-btn {
+          display:block; 
+          width :100%;
+          padding :10 px; 
+          text-align:center; 
+          background-color:#007bff; 
+          color:white; 
+          border:none; 
+          cursor:pointer; 
+          margin-top :10 px ; 
+          transition :background-color ; 
+      }
+      
+      .add-to-cart-btn:hover {background-color:#0056b3;}
+      
+      /* Cart Icon */ 
+      .cart-icon{
+         position :fixed ; 
+         top :20 px ; 
+         right :20 px ; 
+         cursor:pointer ;
+         font-size :24 px ; 
+         background-color:#ff2c2c ; 
+         color:rgb(0, 0, 0) ; 
+         padding :10 px 15 px; 
+         border-radius :70% ;
+         box-shadow :0 px4 6px px rgba (0 ,0 ,0 ,0.2) ;
+         z-index: 1000;
+     }
+     
+     <!--Cart Icon-->
+<div class="cart-icon" onclick="toggleCart()">🛒<span id="cart-count">(0)</span></div>
+
+<!--Cart Modal-->
+<div class="cart-modal" id="cart-modal">
+   <h3>Your Cart</h3>
+   <div id="cart-items"></div>
+   <p class="cart-total">Total:<span id="cart-total">₹0</span></p>
+   <button class="buy-now-btn">Buy Now</button>
+</div>
+
+<!--Overlay-->
+<div class="overlay" id="overlay"></div>
+
+<style>
+/* Cart Icon */
+.cart-icon {
+    position: fixed;
+    top: 20px; /* Adjusts vertical position */
+    right: 20px; /* Adjusts horizontal position to right */
+    cursor:pointer;
+    font-size: 24 px;
+    background-color : #007bff;
+    color: white;
+    padding: 10px 15px; /* Adds padding for better click area */
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Ensures it stays on top of other elements */
+}
+
+   
+.cart-modal h3{
+     margin-bottom :15 px ;
+ }
+ .cart-item{
+   display:flex ; justify-content :space-between ; align-items:center ; margin-bottom :10 px ;
+}
+.cart-item p{
+   margin-bottom :5 px ;
+}
+.cart-item span{
+   color:#777 ;
+}
+.cart-total{
+   text-align:right ; font-weight:bold ; margin-top :15 px ;
+}
+.buy-now-btn{
+   width :100% ; padding :12 px ; background-color:#28a745 ; color:white ; border:none ; cursor:pointer ;
+   font-size :16 px ;
+}
+.buy-now-btn:hover{background-color:#218838;}
+/* Quantity Control Buttons */
+.quantity-control {
+    display:flex; align-items:center; gap:.5rem; justify-content:center; margin-top:.5rem
+}
+
+.quantity-control button {
+    padding:.5rem; border:none; cursor:pointer; background:#007bff; color:white; border-radius:.25rem
+}
+
+.quantity-control button:hover {background:#0056b3}
+
+/* Overlay */ 
+.overlay{position:
+ fixed;top :
+     left :
+         right :
+             bottom :
+                 background -color :
+                     rgba (0 ,0 ,0 ,0.5) ;
+ z-index :
+     display:
+ none ;
+
+}
+/*Responsive Design*/
+@media (max-width:
+768
+h2{text-align:center;}
+.tabs{flex-direction:
+ column;}
+.tab{padding-top:
+10
+padding-bottom:
+}
+
+</style>
+</head>
+<body>
+
+<!--Cart Icon--> <div class="cart-icon" onclick="toggleCart()">🛒<span id="cart-count">(0)</span></div>
+
+<!--Cart Modal--> <div class="cart-modal" id="cart-modal"> <h3>Your Cart</h3> <div id="cart-items"></div> <p class="cart-total">Total:<span id="cart-total">₹0</span></p> <button class="buy-now-btn">Buy Now</button> </div>
+
+<!--Overlay--> <div class="overlay" id="overlay"></div>
+
+<!--Tabs for navigation--> <div class="tabs"> <div class="tab active-tab" onclick="showPanel(0)">ALL</div> <div class="tab" onclick="showPanel(1)">TOPS</div> <div class="tab" onclick="showPanel(2)">PANTS</div> <div class="tab" onclick="showPanel(3)">DRESSES</div> </div>
+
+<!--Panels for displaying the items--> <div class="panel active-panel" id="all"> <h2>All Items</h2> <div class="items-grid"></div> </div>
+
+<div class="panel" id="tops"> <h2>Tops</h2> <div class="items-grid"></div> </div>
+
+<div class="panel" id="pants"> <h2>Pants</h2> <div class="items-grid"></div> </div>
+
+<div class="panel" id="dresses"> <h2>Dresses</h2> <div class="items-grid"></div> </div>
+<!-- JavaScript to handle tab switching, cart functionality, and item rendering -->
+<script>
+// Sample fashion data (you can replace this with data from a CSV file)
+const fashionData = [
+    { name: 'T-shirt', category: 'top', sub_category: 'tshirt', price: '₹999', image_url: 'https://via.placeholder.com/200x200?text=T-shirt' },
+    { name: 'Button-up Shirt', category: 'top', sub_category: 'shirt', price: '₹1,499', image_url: 'https://via.placeholder.com/200x200?text=Shirt' },
+    { name: 'Jeans', category: 'pants', sub_category: 'jeans', price: '₹1,999', image_url: 'https://via.placeholder.com/200x200?text=Jeans' },
+    { name: 'Skirt', category: 'pants', sub_category: 'skirt', price: '₹799', image_url: 'https://via.placeholder.com/200x200?text=Skirt' },
+    { name: 'Dress', category: 'dress', sub_category: 'dress', price: '₹2,499', image_url: 'https://via.placeholder.com/200x200?text=Dress' },
+    { name: 'Summer T-shirt', category: 'top', sub_category: 'tshirt', price: '₹699', image_url: 'https://via.placeholder.com/200x200?text=Summer+T-shirt' },
+    { name: 'Trousers', category: 'pants', sub_category: 'trousers', price: '₹1,299', image_url: 'https://via.placeholder.com/200x200?text=Trousers' },
+    { name:"Shorts", category:"pants", sub_category:"shorts", price:"₹499", image_url:"https://via.placeholder.com/200x200?text=Shorts" },
+    { name:"Evening Gown", category:"dress", sub_category:"gown", price:"₹3,999", image_url:"https://via.placeholder.com/200x200?text=Evening+Gown" },
+    { name:"Casual Dress", category:"dress", sub_category:"casual dress", price:"₹1,999", image_url:"https://via.placeholder.com/200x200?text=Casual+Dress"}
+];
+
+// Cart array to store added items
+let cart = [];
+
+// Function to render items in a specific panel
+function renderItems(category) {
+    const container = document.querySelector(`#${category} .items-grid`);
+    
+    // Clear existing content
+    container.innerHTML = '';
+    
+    // Filter the items based on the category
+    const itemsToDisplay = fashionData.filter(item => category === "all" || item.category === category);
+    
+    // Create HTML for each item and append to the container
+    itemsToDisplay.forEach(item => {
+        const itemHtml = `
+            <div class="item-card">
+                <img src="${item.image_url}" alt="${item.name}">
+                <div class="item-info">
+                    <p>${item.name}</p>
+                    <span>${item.price}</span>
+                    <button class="add-to-cart-btn" onclick="addToCart('${item.name}', '${item.price}')">Add to Cart</button>
+                </div>
+            </div>`;
+        container.innerHTML += itemHtml;
+    });
+}
+
+// Function to switch between panels
+function showPanel(panelIndex) {
+    const panels = document.querySelectorAll('.panel');
+    const tabs = document.querySelectorAll('.tab');
+    
+    // Hide all panels and remove active tab styles
+    panels.forEach(panel => panel.classList.remove('active-panel'));
+    tabs.forEach(tab => tab.classList.remove('active-tab'));
+    
+    // Show the selected panel and activate the corresponding tab
+    panels[panelIndex].classList.add('active-panel');
+    tabs[panelIndex].classList.add('active-tab');
+}
+
+// Function to add an item to the cart or increase its quantity
+function addToCart(name, price) {
+    const existingItem = cart.find(item => item.name === name);
+    
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({ name, price, quantity: 1 });
+    }
+    
+    // Update cart count in the icon
+    document.getElementById('cart-count').innerText = `(${cart.length})`;
+    
+    // Update cart modal content
+    updateCart();
+}
+
+// Function to update cart modal with added items and quantities
+function updateCart() {
+    const cartItemsContainer = document.getElementById('cart-items');
+    
+    // Clear existing cart items
+    cartItemsContainer.innerHTML = '';
+    
+    let totalPrice = 0;
+    
+    // Add each cart item to the modal with quantity controls
+    cart.forEach(item => {
+        totalPrice += parseInt(item.price.replace('₹','')) * item.quantity;  // Extract numeric value from price string
+        
+        const cartItemHtml = `
+            <div class="cart-item">
+                <p>${item.name}</p>
+                <span>${item.price} x ${item.quantity}</span>
+                <div class="quantity-control">
+                    <button onclick="decreaseQuantity('${item.name}')">-</button>
+                    <span>${item.quantity}</span>
+                    <button onclick="increaseQuantity('${item.name}')">+</button>
+                </div>
+            </div>`;
+        cartItemsContainer.innerHTML += cartItemHtml;
+    });
+    
+    // Update total price in the modal
+    document.getElementById('cart-total').innerText = `₹${totalPrice}`;
+}
+
+// Function to increase the quantity of an item in the cart
+function increaseQuantity(name) {
+    const item = cart.find(item => item.name === name);
+    
+    if (item) {
+        item.quantity += 1;
+        updateCart();
+    }
+}
+
+// Function to decrease the quantity of an item in the cart
+function decreaseQuantity(name) {
+    const item = cart.find(item => item.name === name);
+    
+    if (item && item.quantity > 1) {
+        item.quantity -= 1;
+        updateCart();
+    } else if (item && item.quantity === 1) {
+        // Remove item from cart if quantity is 1 and user clicks "-"
+        cart = cart.filter(cartItem => cartItem.name !== name);
+        updateCart();
+        
+        // Update cart count in the icon
+        document.getElementById('cart-count').innerText = `(${cart.length})`;
+        
+        if (cart.length === 0) {
+            toggleCart();  // Close modal if no items are left in the cart
+        }
+    }
+}
+
+// Function to toggle the visibility of the cart modal and overlay
+function toggleCart() {
+    const cartModal = document.getElementById('cart-modal');
+    const overlay = document.getElementById('overlay');
+    
+    if (cartModal.style.display === "none" || !cartModal.style.display) {
+        cartModal.style.display = "block";
+        overlay.style.display = "block";
+        
+        // Disable scrolling when modal is open
+        document.body.style.overflow = "hidden";
+        
+        updateCart();  // Ensure that the latest cart data is shown
+    } else {
+        cartModal.style.display = "none";
+        overlay.style.display = "none";
+        
+        // Enable scrolling when modal is closed
+        document.body.style.overflow = "auto";
+    }
+}
+
+// Initialize the page with all items displayed in the "All" tab
+document.addEventListener("DOMContentLoaded", function() {
+   renderItems("all");
+   renderItems("tops");
+   renderItems("pants");
+   renderItems("dresses");
+});
+</script>
+
+</body>
+</html>

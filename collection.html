@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Fit Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .tabs {
+            display: flex;
+            cursor: pointer;
+            background-color: #f1f1f1;
+        }
+
+        .tab {
+            padding: 14px 20px;
+            flex-grow: 1;
+            text-align: center;
+            border-bottom: solid 2px transparent;
+        }
+
+        .tab:hover {
+            background-color: #ddd;
+        }
+
+        .active-tab {
+            border-bottom: solid 2px #000;
+        }
+
+        .panel {
+            display: none;
+            padding: 20px;
+        }
+
+        .active-panel {
+            display: block;
+        }
+
+        .item {
+            margin-bottom: 15px;
+        }
+
+        img {
+            width: 100px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Tabs for navigation -->
+    <div class="tabs">
+        <div class="tab active-tab" onclick="showPanel(0)">ALL</div>
+        <div class="tab" onclick="showPanel(1)">TOPS</div>
+        <div class="tab" onclick="showPanel(2)">PANTS</div>
+        <div class="tab" onclick="showPanel(3)">DRESSES</div>
+    </div>
+
+    <!-- Panels for displaying the items -->
+    <div class="panel active-panel" id="all">
+        <h2>All Items</h2>
+        <!-- Items will be dynamically inserted here -->
+    </div>
+
+    <div class="panel" id="tops">
+        <h2>Tops</h2>
+        <!-- Items will be dynamically inserted here -->
+    </div>
+
+    <div class="panel" id="pants">
+        <h2>Pants</h2>
+        <!-- Items will be dynamically inserted here -->
+    </div>
+
+    <div class="panel" id="dresses">
+        <h2>Dresses</h2>
+        <!-- Items will be dynamically inserted here -->
+    </div>
+
+    <script>
+      // Sample fashion data (you can replace this with data from a CSV file)
+      const fashionData = [
+          { name: 'T-shirt', category: 'top', sub_category: 'tshirt', price: 19.99, image_url: 'img1.jpg' },
+          { name: 'Button-up Shirt', category: 'top', sub_category: 'shirt', price: 34.99, image_url: 'img2.jpg' },
+          { name: 'Jeans', category: 'pants', sub_category: 'jeans', price: 49.99, image_url: 'img3.jpg' },
+          { name: 'Skirt', category: 'pants', sub_category: 'skirt', price: 29.99, image_url: 'img4.jpg' },
+          { name: 'Dress', category: 'dress', sub_category: 'dress', price: 89.99, image_url: 'img5.jpg' },
+          { name: 'Summer T-shirt', category: 'top', sub_category: 'tshirt', price: 15.99, image_url: 'img6.jpg' },
+          { name: 'Trousers', category: 'pants', sub_category: 'trousers', price: 39.99, image_url: 'img7.jpg' },
+          { name: 'Shorts', category: 'pants', sub_category: 'shorts', price: 24.99, image_url: 'img8.jpg' },
+          { name: 'Evening Gown', category: 'dress', sub_category: 'gown', price: 119.99, image_url: 'img9.jpg' },
+          { name: 'Casual Dress', category: 'dress', sub_category: 'casual dress', price: 59.99, image_url: 'img10.jpg' }
+      ];
+
+      // Function to render items in a specific panel
+      function renderItems(category) {
+          let container = document.getElementById(category);
+          
+          // Clear existing content
+          container.innerHTML = `<h2>${category.charAt(0).toUpperCase() + category.slice(1)} Items</h2>`;
+          
+          // Filter the items based on the category
+          const itemsToDisplay = fashionData.filter(item => category === "all" || item.category === category);
+          
+          // Create HTML for each item and append to the container
+          itemsToDisplay.forEach(item => {
+              const itemHtml = `
+                  <div class="item">
+                      <img src="${item.image_url}" alt="${item.name}">
+                      <p>${item.name} - $${item.price}</p>
+                  </div>`;
+              container.innerHTML += itemHtml;
+          });
+      }
+
+      // Function to switch between panels
+      function showPanel(panelIndex) {
+          const panels = document.querySelectorAll('.panel');
+          const tabs = document.querySelectorAll('.tab');
+          
+          // Hide all panels and remove active tab styles
+          panels.forEach(panel => panel.classList.remove('active-panel'));
+          tabs.forEach(tab => tab.classList.remove('active-tab'));
+          
+          // Show the selected panel and activate the corresponding tab
+          panels[panelIndex].classList.add('active-panel');
+          tabs[panelIndex].classList.add('active-tab');
+      }
+
+      // Initialize the page with all items displayed in the "All" tab
+      document.addEventListener("DOMContentLoaded", function() {
+         renderItems("all");
+         renderItems("tops");
+         renderItems("pants");
+         renderItems("dresses");
+      });
+    </script>
+
+</body>
+</html>
